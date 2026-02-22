@@ -5,7 +5,12 @@ function onFormSubmit(e) {
 
   const dbSheet = ss.getSheetByName("db_actif");
 
+  Logger.log("Event object: " + JSON.stringify(e))
+
   const values = e.values;
+
+  Logger.log(" values length: " + values.length);
+  Logger.log(" values content: " + values);
 
   const nom = values[1];
   const prenom = values[2];
@@ -37,7 +42,12 @@ function onFormSubmit(e) {
     today
   ];
 
+  Logger.log("Writing to sheet: " + dbSheet.getName());
+  Logger.log("Current last row in db_actif: " + dbSheet.getLastRow());
+
   dbSheet.appendRow(newRow);
+
+  Logger.log("New last row after append: " + dbSheet.getLastRow());
 }
 
 function getNextId(sheet) {

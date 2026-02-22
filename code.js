@@ -9,7 +9,12 @@ function onFormSubmit(e) {
 
   const nom = values[1];
   const prenom = values[2];
-  const tel_priv = values[5];
+  let tel_priv = values[5];
+
+  if (tel_priv && tel_priv.startsWith("+")) {
+    tel_priv = "'" + tel_priv;
+  }
+
   const email = values[7];
   const statut = values[8];
   const instit = values[9];

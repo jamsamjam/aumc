@@ -85,9 +85,9 @@ function onEdit(e) {
     const alreadySent = sheet.getRange(row, mailSentColumn).getValue();
     if (alreadySent === true) return;
 
-    const email = sheet.getRange(row, 5).getValue(); // email
-    const nom = sheet.getRange(row, 2).getValue(); // nom
-    const prenom = sheet.getRange(row, 3).getValue(); // prenom
+    const email = sheet.getRange(row, 5).getValue();
+    const nom = sheet.getRange(row, 2).getValue();
+    const prenom = sheet.getRange(row, 3).getValue();
 
     if (!email) return;
 
@@ -120,5 +120,65 @@ function onEdit(e) {
     catch(err) {
       Logger.log("Error sending email: " + err);
     }
+  }
+}
+
+function sendBiMonthlyReport() {
+
+  const sheet = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getSheetByName("db_actif");
+
+  const data = sheet.getDataRange().getValues();
+
+  const reportColumn = 13; // reported
+  const nameColumn = 2;
+  const prenomColumn = 3;
+  const sciperColumn = 8;
+
+  let list = [];
+  let rowsToUpdate = [];
+
+  for (let i = 1; i < data.length; i++) {
+
+    const reported = data[i][reportColumn - 1];
+    const uni = data[i][6];
+
+    if (uni !== "EPFL") continue;
+
+    const nom = data[i][nameColumn - 1];
+    const prenom = data[i][prenomColumn - 1];
+    const sciper = data[i][sciperColumn - 1];
+
+    if (!nom && !prenom) continue;
+
+    if (reported !== true) {
+      list.push(prenom + " " + nom + " - " + sciper);
+      rowsToUpdate.push(i + 1);
+    }
+  }
+
+  if (list.length === 0) return;
+
+  const subject = "New piano room members";
+
+  const body =
+    "Bonjour," +
+    "Newly added members are:\n\n" +
+    list.join("\n");
+
+  try {
+      GmailApp.sendEmail(
+      "responsible@gmail.com", // TODO
+      subject,
+      body
+    );
+
+    rowsToUpdate.forEach(row => {
+      sheet.getRange(row, reportColumn).setValue(true);
+    });
+  }
+  catch(err) {
+    Logger.log("Error sending email: " + err);
   }
 }

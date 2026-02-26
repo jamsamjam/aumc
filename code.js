@@ -117,6 +117,7 @@ function onEdit(e) {
 
     const subject = "Accréditations AUMC";
     
+    // This will be sent to a student
     const htmlBody =
   "Bonjour " + prenom + " " + nom + ",<br><br>" +
   "You have been granted access to the piano rooms starting from today, " + formattedDate + ", for the duration you paid for.<br><br>" +
@@ -158,7 +159,6 @@ function sendBiMonthlyReport() {
   let rowsToUpdate = [];
 
   for (let i = 1; i < data.length; i++) {
-
     const reported = data[i][reportColumn - 1];
     const uni = data[i][6];
 
@@ -182,14 +182,15 @@ function sendBiMonthlyReport() {
 
   const subject = "New piano room members";
 
+  // This is for the summary email that will be sent to the email below
   const body =
-    "Bonjour," +
+    "Bonjour,\n\n" +
     "Newly added members are:\n\n" +
     list.join("\n");
 
   try {
       GmailApp.sendEmail(
-      "responsible@gmail.com", // TODO
+      "responsible@example.com", // here!
       subject,
       body
     );

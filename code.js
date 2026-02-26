@@ -39,7 +39,9 @@ function onFormSubmit(e) {
     sciper,
     "", // salles_piano_paiement
     "", // participation
-    today
+    today,
+    false, // mail_sent
+    false // reported
   ];
 
   Logger.log("Writing to sheet: " + dbSheet.getName());
@@ -150,6 +152,7 @@ function sendBiMonthlyReport() {
   const nameColumn = 2;
   const prenomColumn = 3;
   const sciperColumn = 8;
+  const paymentColumn = 9;
 
   let list = [];
   let rowsToUpdate = [];
@@ -164,8 +167,10 @@ function sendBiMonthlyReport() {
     const nom = data[i][nameColumn - 1];
     const prenom = data[i][prenomColumn - 1];
     const sciper = data[i][sciperColumn - 1];
+    const payment = data[i][paymentColumn - 1];
 
     if (!nom && !prenom) continue;
+    if (!payment) continue;
 
     if (reported !== true) {
       list.push(prenom + " " + nom + " - " + sciper);

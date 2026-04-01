@@ -16,7 +16,7 @@ This script runs on Google Apps Script, and it handles:
 
 ## Usage
 
-### To record a payment
+### How to record a payment
 
 When a student has paid:
 
@@ -27,13 +27,19 @@ When a student has paid:
 >[!Warning]
 > Do not add empty rows at the end of `db_actif` sheet. They may be interpreted as valid data.
 
-### To delete a row
+### When the summary email is sent
+
+The summary email is sent on the 1st and 15th of each month, and it includes all students who have paid since the last summary email.
+
+So students with `salles_piano_paiement` field filled in and not included in the previous summary email will be included in the new summary email. After the email is sent, their `reported` field is updated to true, so they will not be included again.
+
+### How to delete a row
 
 Click the row number on the left, then right click and select "Delete row" (not "Clear row").
 
-![Delete row menu](menu.png)
+![Delete row menu](./menu.png)
 
-### To edit email content
+### How to edit email content
 
 1. Go to Extensions > Apps Script, then open `Code.js` file.
 2. You can edit the content there. The `htmlBody` inside `onEdit` is the content of the email that will be sent to students, and `body` inside `sendBiMonthlyReport` is the content of the summary email (that will be sent to the email below).

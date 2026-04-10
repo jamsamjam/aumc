@@ -1,5 +1,10 @@
 # AUMC Piano Room Access Automation
 
+![Workflow](workflow.png)
+
+>[!Warning]
+>Currently being updated (should be done by the end of April 2026)
+
 This script runs on Google Apps Script, and it handles:
 
 - Adding new form submissions to the `db_actif` sheet
@@ -37,7 +42,7 @@ So students with `salles_piano_paiement` field filled in and not included in the
 
 Click the row number on the left, then right click and select "Delete row" (not "Clear row").
 
-![Delete row menu](./menu.png)
+![Delete row menu](menu.png)
 
 ### How to edit email content
 

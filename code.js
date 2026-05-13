@@ -2,7 +2,6 @@
 
 function onFormSubmit(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-
   const dbSheet = ss.getSheetByName("db_actif");
 
   Logger.log("Event object: " + JSON.stringify(e))
@@ -40,8 +39,9 @@ function onFormSubmit(e) {
     "", // salles_piano_paiement
     "", // participation
     today,
-    false, // mail_sent
-    false // reported
+    false, // summary_sent
+    false, // access_granted
+    false // mail_sent
   ];
 
   Logger.log("Writing to sheet: " + dbSheet.getName());
@@ -79,8 +79,9 @@ function getNextId(sheet) {
 function onEdit(e) {
 
   const sheetName = "db_actif";
-  const paymentColumn = 9; // salles_piano_paiement
-  const mailSentColumn = 12; // mail_sent
+  const summarySentColumn = 12; // summary_sent
+  const accessColumn = 13; // access_granted
+  const mailSentColumn = 14; // mail_sent
 
   const sheet = e.range.getSheet();
   if (sheet.getName() !== sheetName) return;
@@ -89,12 +90,12 @@ function onEdit(e) {
   const column = e.range.getColumn();
 
   // exclude header row
-  if (row <= 1 || column !== paymentColumn) return;
+  if (row <= 1 || column !== accessColumn) return;
 
   const newValue = e.value;
   const oldValue = e.oldValue;
 
-  if (!oldValue && newValue) {
+  if (oldValue === "FALSE" && newValue === "TRUE") {
 
     const uni = sheet.getRange(row, 7).getValue();
     if (uni !== "EPFL") return;
@@ -149,7 +150,7 @@ function sendBiMonthlyReport() {
 
   const data = sheet.getDataRange().getValues();
 
-  const reportColumn = 13; // reported
+  const summarySentColumn = 12; // summary_sent
   const nameColumn = 2;
   const prenomColumn = 3;
   const sciperColumn = 8;
@@ -159,7 +160,7 @@ function sendBiMonthlyReport() {
   let rowsToUpdate = [];
 
   for (let i = 1; i < data.length; i++) {
-    const reported = data[i][reportColumn - 1];
+    const summarySent = data[i][summarySentColumn - 1];
     const uni = data[i][6];
 
     if (uni !== "EPFL") continue;
@@ -172,7 +173,7 @@ function sendBiMonthlyReport() {
     if (!nom && !prenom) continue;
     if (!payment) continue;
 
-    if (reported !== true) {
+    if (summarySent !== true) {
       list.push(prenom + " " + nom + " - " + sciper);
       rowsToUpdate.push(i + 1);
     }
@@ -189,14 +190,14 @@ function sendBiMonthlyReport() {
     list.join("\n");
 
   try {
-      GmailApp.sendEmail(
-      "responsible@example.com", // here!
+    GmailApp.sendEmail(
+      "laura.piveteau@epfl.ch",
       subject,
       body
     );
 
     rowsToUpdate.forEach(row => {
-      sheet.getRange(row, reportColumn).setValue(true);
+      sheet.getRange(row, summarySentColumn).setValue(true);
     });
   }
   catch(err) {
